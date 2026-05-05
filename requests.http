@@ -1,0 +1,16 @@
+### בקשה להוספת משתמש חדש (POST)
+POST http://localhost:3001/api/add
+Content-Type: application/json
+
+{
+  "id": 123123,
+  "first_name": "mosh",
+  "last_name": "israeli",
+  "birthday": "1990-01-01"
+}
+
+### בקשה לשליפת כל המשתמשים (GET)
+GET http://localhost:3001/api/users
+
+### בדיקת תהליך ה-About
+GET http://localhost:3002/api/about
