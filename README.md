@@ -1,8 +1,8 @@
-# Cost Manager Project - Phase 1
+# Cost Manager Project
 
 This project is a multi-process system for managing costs and users, built with **Node.js**, **Express**, and **MongoDB Atlas**. It follows a microservices-like architecture where each service runs as a separate process.
 
-## 🚀 Services Developed (Partner A - Agneta Gavrielov)
+## 🚀 Services Developed (by Partner A - Agneta Gavrielov)
 
 ### 1. Users Service (Port 3001)
 
