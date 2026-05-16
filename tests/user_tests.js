@@ -7,6 +7,7 @@ const { expect } = require('chai');
  */
 describe('Users Service Unit Tests', () => {
     const api = 'http://localhost:3001';
+    const testUserId = Math.floor(Math.random() * 1000000) + 1000000;
 
     /*
      * Test case: Adding a new user via POST /api/add.
@@ -14,7 +15,7 @@ describe('Users Service Unit Tests', () => {
      */
     it('should add a new user and return status 201', async () => {
         const newUser = {
-            id: 999999,
+            id: testUserId,
             first_name: "Test",
             last_name: "User",
             birthday: "2000-01-01"
@@ -25,7 +26,7 @@ describe('Users Service Unit Tests', () => {
             .send(newUser);
 
         expect(response.status).to.equal(201);
-        expect(response.body.id).to.equal(999999);
+        expect(response.body.id).to.equal(testUserId);
     });
 
     /*
@@ -42,11 +43,11 @@ describe('Users Service Unit Tests', () => {
      * Test case: Getting a specific user via GET /api/users/:id.
      */
     it('should return details for a specific user ID', async () => {
-        const response = await request(api).get('/api/users/999999');
+        const response = await request(api).get(`/api/users/${testUserId}`);
 
         expect(response.status).to.equal(200);
-        expect(response.body.id).to.equal(999999);
-        expect(response.body.total).to.equal(0); // Expected placeholder for now
+        expect(response.body.id).to.equal(testUserId);
+        expect(response.body.total).to.equal(0); // Expected total of 0 for a brand new user
     });
 
     /*

@@ -16,7 +16,8 @@
     "express": "^5.2.1",
     "mongoose": "^9.6.1",
     "pino": "^10.3.1",
-    "pino-http": "^11.0.0"
+    "pino-http": "^11.0.0",
+    "pino-mongodb": "^5.0.0"
   },
   "devDependencies": {
     "chai": "^6.2.2",

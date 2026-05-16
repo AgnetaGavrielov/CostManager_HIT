@@ -5,15 +5,37 @@ const express = require('express');
  * Importing pino-http for logging all HTTP requests.
  * This is a requirement for every microservice in the project.
  */
-const pino = require('pino-http')();
+const pinoHttp = require('pino-http');
+const mongoose = require('mongoose');
+const Log = require('./models/log');
 
 const app = express();
+
+mongoose.connect(process.env.MONGO_URI)
+    .then(() => console.log('About Service connected to MongoDB'))
+    .catch((error) => console.error('MongoDB connection error:', error));
+
+const logStream = {
+    write: (chunk) => {
+        process.stdout.write(chunk);
+        try {
+            const logData = JSON.parse(chunk.toString());
+            if (logData.req) {
+                Log.create({
+                    method: logData.req.method,
+                    url: logData.req.url,
+                    timestamp: logData.time ? new Date(logData.time) : new Date()
+                }).catch(() => {});
+            }
+        } catch (e) {}
+    }
+};
 
 /*
  * Middleware to parse JSON and log requests.
  */
 app.use(express.json());
-app.use(pino);
+app.use(pinoHttp({}, logStream));
 
 /*
  * GET /api/about endpoint.
@@ -24,7 +46,7 @@ app.get('/api/about', (req, res) => {
     try {
         const teamMembers = [
             { first_name: "שם_שלך", last_name: "משפחה_שלך" },
-            { first_name: "שם_שותפה", last_name: "משפחה_שותפה" }
+            { first_name: "tal", last_name: "sujaz" }
         ];
 
         // Send the JSON response with status 200

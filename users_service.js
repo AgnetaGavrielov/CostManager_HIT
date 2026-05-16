@@ -6,17 +6,38 @@ const mongoose = require('mongoose');
  * Importing pino-http for professional logging of all requests.
  * Importing the User model from the local models folder.
  */
-const pino = require('pino-http')();
+const pinoHttp = require('pino-http');
 const User = require('./models/User');
+const Cost = require('./models/cost');
+const Log = require('./models/log');
 
 const app = express();
+
+/*
+ * Custom Pino stream that writes to console and saves Log documents.
+ */
+const logStream = {
+    write: (chunk) => {
+        process.stdout.write(chunk);
+        try {
+            const logData = JSON.parse(chunk.toString());
+            if (logData.req) {
+                Log.create({
+                    method: logData.req.method,
+                    url: logData.req.url,
+                    timestamp: logData.time ? new Date(logData.time) : new Date()
+                }).catch(() => {});
+            }
+        } catch (e) {}
+    }
+};
 
 /*
  * Standard middleware for parsing JSON in request bodies.
  * Pino middleware logs every incoming HTTP request automatically.
  */
 app.use(express.json());
-app.use(pino);
+app.use(pinoHttp({}, logStream));
 
 /*
  * Establishing connection to MongoDB Atlas using the URI from .env.
@@ -96,14 +117,16 @@ app.get('/api/users/:id', async (req, res) => {
         }
 
         /*
-         * Success response including basic info and total costs placeholder.
-         * Partner will integrate this with the costs collection later.
+         * Success response including basic info and calculated total costs.
          */
+        const userCosts = await Cost.find({ userid: user.id });
+        const total = userCosts.reduce((acc, current) => acc + current.sum, 0);
+
         res.status(200).json({
             first_name: user.first_name,
             last_name: user.last_name,
             id: user.id,
-            total: 0
+            total: total
         });
 
     } catch (error) {

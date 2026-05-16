@@ -2,7 +2,7 @@
 
 This project is a multi-process system for managing costs and users, built with **Node.js**, **Express**, and **MongoDB Atlas**. It follows a microservices-like architecture where each service runs as a separate process.
 
-## 🚀 Services Developed (by Partner A - Agneta Gavrielov)
+## 🚀 Services Developed
 
 ### 1. Users Service (Port 3001)
 
@@ -17,6 +17,19 @@ Handles user management and database integration:
 A dedicated process providing team information:
 
 * `GET /api/about`: Returns a JSON array with team members' names.
+
+### 3. Costs Service (Port 3003)
+
+Handles cost management and reporting (Partner B - Tal Sujez):
+
+* `POST /api/add`: Adds a new cost item to the database.
+* `GET /api/report`: Retrieves a monthly report of costs grouped by categories (using the Computed Design Pattern).
+
+### 4. Logs Service (Port 3004)
+
+Handles logging:
+
+* `GET /api/logs`: Retrieves system logs from the database.
 
 ## 🛠 Setup & Installation
 
@@ -36,7 +49,11 @@ A dedicated process providing team information:
    Create a `.env` file in the root directory and add:
 
    * `MONGO_URI`
-   * Port variables (as provided via WhatsApp)
+   * Port variables 
+   USERS_PORT=3001
+ABOUT_PORT=3002
+COST_PORT=3003
+LOG_PORT=3004
 
 4. **Run the services**:
    Open separate terminals for each service:
@@ -44,6 +61,8 @@ A dedicated process providing team information:
    ```bash
    node usersService.js
    node aboutService.js
+   node costService.js
+   node logService.js
    ```
 
 ## 🧪 Testing
@@ -59,8 +78,4 @@ The project includes automated tests using **Mocha**, **Chai**, and **Supertest*
    npx mocha tests/userTests.js
    ```
 
-## 📅 Next Steps for Partner B - Tal Sujez
 
-* **Costs Model**: Define the schema in `models/Cost.js`.
-* **Costs Service**: Develop the process on Port 3003, including the monthly report using the **Computed Design Pattern**.
-* **Logs Service**: Develop the process on Port 3004 to retrieve Pino logs from the database.
