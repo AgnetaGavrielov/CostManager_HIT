@@ -1,81 +1,132 @@
 # Cost Manager Project
 
-This project is a multi-process system for managing costs and users, built with **Node.js**, **Express**, and **MongoDB Atlas**. It follows a microservices-like architecture where each service runs as a separate process.
+A multi-process system for managing users and costs, built with **Node.js**, **Express**, and **MongoDB Atlas**.
 
-## 🚀 Services Developed
+The system follows a **microservices-like architecture**, where each service runs as a separate process.
 
-### 1. Users Service (Port 3001)
+---
 
-Handles user management and database integration:
+## 🚀 Services
 
-* `POST /api/add`: Creates a new user in the database (required fields: id, first_name, last_name, birthday).
-* `GET /api/users`: Retrieves a full list of all registered users.
-* `GET /api/users/:id`: Retrieves specific user details, including a placeholder for total costs.
+### 👤 Users Service (Port 3001)
 
-### 2. About Service (Port 3002)
+Handles user management and database operations:
 
-A dedicated process providing team information:
+- `POST /api/add`  
+  Create a new user  
+  **Required fields:** `id`, `first_name`, `last_name`, `birthday`
 
-* `GET /api/about`: Returns a JSON array with team members' names.
+- `GET /api/users`  
+  Get a list of all users
 
-### 3. Costs Service (Port 3003)
+- `GET /api/users/:id`  
+  Get details of a specific user, including total cost calculation
 
-Handles cost management and reporting (Partner B - Tal Sujez):
+---
 
-* `POST /api/add`: Adds a new cost item to the database.
-* `GET /api/report`: Retrieves a monthly report of costs grouped by categories (using the Computed Design Pattern).
+### ℹ️ About Service (Port 3002)
 
-### 4. Logs Service (Port 3004)
+Provides information about the development team:
 
-Handles logging:
+- `GET /api/about`  
+  Returns a JSON array with team members' names
 
-* `GET /api/logs`: Retrieves system logs from the database.
+---
+
+### 💰 Costs Service (Port 3003)
+
+Handles cost management and reporting  
+*(Partner B - Tal Sujaz)*
+
+- `POST /api/add`  
+  Add a new cost item (validates that the user exists)
+
+- `GET /api/report`  
+  Get a monthly cost report grouped by categories  
+  *(Uses the Computed Design Pattern)*
+
+---
+
+### 📜 Logs Service (Port 3004)
+
+Handles system logging:
+
+- `GET /api/logs`  
+  Retrieve system logs from the database
+
+---
 
 ## 🛠 Setup & Installation
 
-1. **Clone the repository**:
+### 1. Clone the repository
 
-   ```bash
-   git clone https://github.com/AgnetaGavrielov/CostManager_HIT.git
-   ```
+```bash
+git clone https://github.com/AgnetaGavrielov/CostManager_HIT.git
+cd CostManager_HIT
+````
 
-2. **Install dependencies**:
+### 2. Install dependencies
 
-   ```bash
-   npm install
-   ```
+```bash
+npm install
+```
 
-3. **Environment Variables**:
-   Create a `.env` file in the root directory and add:
+### 3. Environment Variables
 
-   * `MONGO_URI`
-   * Port variables 
-   USERS_PORT=3001
+Create a `.env` file in the root directory:
+
+```env
+MONGO_URI=your_mongodb_connection_string_here
+USERS_PORT=3001
 ABOUT_PORT=3002
 COST_PORT=3003
 LOG_PORT=3004
+```
 
-4. **Run the services**:
-   Open separate terminals for each service:
+---
 
-   ```bash
-   node usersService.js
-   node aboutService.js
-   node costService.js
-   node logService.js
-   ```
+### 4. Run the services
+
+Open a separate terminal for each service:
+
+```bash
+node users_service.js
+node about_service.js
+node cost_service.js
+node log_service.js
+```
+
+---
 
 ## 🧪 Testing
 
-The project includes automated tests using **Mocha**, **Chai**, and **Supertest**.
+The project includes automated tests using:
 
-### How to run tests:
+* **Mocha**
+* **Chai**
+* **Supertest**
 
-1. Make sure the **Users Service** is running on port `3001`.
-2. Run the tests with:
+### ▶️ Run tests
 
-   ```bash
-   npx mocha tests/userTests.js
-   ```
+1. Make sure **all 4 services are running**
+2. Run:
 
+```bash
+npx mocha tests/*.js
+```
 
+---
+
+## 📌 Notes
+
+* Each service runs independently on its own port
+* Make sure MongoDB Atlas is accessible before running the services
+
+---
+
+## 👩‍💻 Authors
+
+This project was developed by **Agneta Gavrielov** and **Tal Sujaz**
+as part of the *Asynchronous Server-Side Development* course at HIT (Holon Institute of Technology).
+
+```
