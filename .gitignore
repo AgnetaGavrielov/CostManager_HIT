@@ -1,2 +1,11 @@
-node_modules
+# Dependencies
+node_modules/
+
+# Environment variables
 .env
+
+# WebStorm / IntelliJ IDE files
+.idea/
+
+# npm crash logs
+npm-debug.log*
