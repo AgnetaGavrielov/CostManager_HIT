@@ -3,7 +3,7 @@ POST http://localhost:3001/api/add
 Content-Type: application/json
 
 {
-  "id": 123123,
+  "id": 999999,
   "first_name": "mosh",
   "last_name": "israeli",
   "birthday": "1990-01-01"
@@ -14,3 +14,20 @@ GET http://localhost:3001/api/users
 
 ### בדיקת תהליך ה-About
 GET http://localhost:3002/api/about
+
+### בקשה להוספת הוצאה חדשה (POST)
+POST http://localhost:3003/api/add
+Content-Type: application/json
+
+{
+  "userid": 999999,
+  "description": "Test Cost",
+  "category": "food",
+  "sum": 100
+}
+
+### קבלת דוח חודשי (GET)
+GET http://localhost:3003/api/report?id=999999&year=2026&month=5
+
+### שליפת לוגים ממסד הנתונים (GET)
+GET http://localhost:3004/api/logs
