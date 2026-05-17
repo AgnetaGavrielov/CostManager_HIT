@@ -1,3 +1,6 @@
+/*
+ * Importing the Mongoose library.
+ */
 const mongoose = require('mongoose');
 
 /*
@@ -8,7 +11,7 @@ const userSchema = new mongoose.Schema({
     id: {
         type: Number,
         required: true,
-        unique: true
+        unique: true // Prevents duplicate users in the database
     },
     first_name: {
         type: String,
@@ -18,6 +21,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    // Adding birthday field as required by the documentation
     birthday: {
         type: Date,
         required: true

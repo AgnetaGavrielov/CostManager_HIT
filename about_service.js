@@ -45,7 +45,7 @@ app.use(pinoHttp({}, logStream));
 app.get('/api/about', (req, res) => {
     try {
         const teamMembers = [
-            { first_name: "שם_שלך", last_name: "משפחה_שלך" },
+            { first_name: "agneta", last_name: "gavrielov" },
             { first_name: "tal", last_name: "sujaz" }
         ];
 
