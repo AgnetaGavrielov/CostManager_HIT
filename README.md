@@ -35,8 +35,7 @@ Provides information about the development team:
 
 ### 💰 Costs Service (Port 3003)
 
-Handles cost management and reporting  
-*(Partner B - Tal Sujaz)*
+Handles cost management and reporting:
 
 - `POST /api/add`  
   Add a new cost item (validates that the user exists)
@@ -128,5 +127,3 @@ npx mocha tests/*.js
 
 This project was developed by **Agneta Gavrielov** and **Tal Sujaz**
 as part of the *Asynchronous Server-Side Development* course at HIT (Holon Institute of Technology).
-
-```
