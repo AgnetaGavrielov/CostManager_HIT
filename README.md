@@ -29,7 +29,7 @@ Handles user management and database operations:
 Provides information about the development team:
 
 - `GET /api/about`  
-  Returns a JSON array with team members' names
+  Returns a JSON array with team members' first and last names only
 
 ---
 
@@ -38,11 +38,17 @@ Provides information about the development team:
 Handles cost management and reporting:
 
 - `POST /api/add`  
-  Add a new cost item (validates that the user exists)
+  Add a new cost item (validates that the user exists)  
+  **Required fields:** `userid`, `description`, `category`, `sum`  
+  **Supported categories:** `food`, `health`, `housing`, `sports`, `education`
 
-- `GET /api/report`  
+- `GET /api/report?id=:id&year=:year&month=:month`  
   Get a monthly cost report grouped by categories  
-  *(Uses the Computed Design Pattern)*
+  **Required parameters:** `id`, `year`, `month`
+
+  > **Computed Design Pattern:** Reports for past months are calculated once and cached
+  > in the database. Subsequent requests for the same month return the cached result
+  > immediately, without recalculating.
 
 ---
 
@@ -51,7 +57,8 @@ Handles cost management and reporting:
 Handles system logging:
 
 - `GET /api/logs`  
-  Retrieve system logs from the database
+  Retrieve all system logs from the database  
+  *(Every HTTP request to any service is automatically logged)*
 
 ---
 
@@ -62,7 +69,7 @@ Handles system logging:
 ```bash
 git clone https://github.com/AgnetaGavrielov/CostManager_HIT.git
 cd CostManager_HIT
-````
+```
 
 ### 2. Install dependencies
 
@@ -101,9 +108,9 @@ node log_service.js
 
 The project includes automated tests using:
 
-* **Mocha**
-* **Chai**
-* **Supertest**
+- **Mocha**
+- **Chai**
+- **Supertest**
 
 ### ▶️ Run tests
 
@@ -111,19 +118,19 @@ The project includes automated tests using:
 2. Run:
 
 ```bash
-npx mocha tests/*.js
+npm test
 ```
 
 ---
 
 ## 📌 Notes
 
-* Each service runs independently on its own port
-* Make sure MongoDB Atlas is accessible before running the services
+- Each service runs independently on its own port
+- Make sure MongoDB Atlas is accessible before running the services
 
 ---
 
 ## 👩‍💻 Authors
 
-This project was developed by **Agneta Gavrielov** and **Tal Sujaz**
+This project was developed by **Agneta Gavrielov** and **Tal Sujaz**  
 as part of the *Asynchronous Server-Side Development* course at HIT (Holon Institute of Technology).
