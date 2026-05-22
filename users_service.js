@@ -8,7 +8,7 @@ const mongoose = require('mongoose');
  * Importing the User model from the local models folder.
  */
 const pinoHttp = require('pino-http');
-const User = require('./models/User');
+const User = require('./models/user');
 const Cost = require('./models/cost');
 const Log = require('./models/log');
 

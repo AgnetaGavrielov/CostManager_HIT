@@ -8,7 +8,7 @@ const Report = require('./models/report');
 const Log = require('./models/log');
 
 // Importing the User model to validate user existence before adding costs
-const User = require('./models/User');
+const User = require('./models/user');
 
 const app = express();
 
