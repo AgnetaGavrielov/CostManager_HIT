@@ -15,8 +15,13 @@ const app = express();
 // Middleware to parse incoming JSON requests
 app.use(express.json());
 
-// Connecting to the MongoDB Atlas database using URI from environment variables
-mongoose.connect(process.env.MONGO_URI);
+/*
+ * Establishing connection to MongoDB Atlas using the URI from .env.
+ * Handling success and failure scenarios for the database connection.
+ */
+mongoose.connect(process.env.MONGO_URI)
+    .then(() => console.log('Log service connected to MongoDB successfully!'))
+    .catch((error) => console.error('MongoDB connection error:', error));
 
 /*
  * Custom stream for Pino logger.
@@ -27,7 +32,6 @@ const logStream = {
         process.stdout.write(chunk);
         try {
             const logData = JSON.parse(chunk.toString());
-
             // Check if the log contains request data before saving
             if (logData.req) {
                 Log.create({
@@ -52,10 +56,9 @@ app.get('/api/logs', async (req, res) => {
         // Fetch all logs from the MongoDB collection
         const logs = await Log.find();
 
-        // Return the array of logs
-        res.json(logs);
+        // Return the array of logs with status 200
+        res.status(200).json(logs);
     } catch (error) {
-
         /*
          * Standardized error response containing id and message.
          * Status 500 is used for internal server errors.
@@ -69,7 +72,7 @@ app.get('/api/logs', async (req, res) => {
 
 /*
  * Start the logs microservice on the specified port.
- * It ensures this process runs independently.
+ * It ensures this process runs independently from the other services.
  */
 const PORT = process.env.LOG_PORT || 3004;
 app.listen(PORT, () => {

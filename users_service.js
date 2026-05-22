@@ -1,4 +1,5 @@
 require('dotenv').config();
+
 const express = require('express');
 const mongoose = require('mongoose');
 
@@ -21,6 +22,7 @@ const logStream = {
         process.stdout.write(chunk);
         try {
             const logData = JSON.parse(chunk.toString());
+            // Save log entry to MongoDB if the chunk contains request data
             if (logData.req) {
                 Log.create({
                     method: logData.req.method,
@@ -55,6 +57,14 @@ app.post('/api/add', async (req, res) => {
     try {
         const { id, first_name, last_name, birthday } = req.body;
 
+        // Validating that all required fields are present before proceeding
+        if (!id || !first_name || !last_name || !birthday) {
+            return res.status(400).json({
+                id: id || 'unknown',
+                message: 'Missing required fields: id, first_name, last_name, birthday'
+            });
+        }
+
         /*
          * Initializing a new User document based on the Mongoose schema.
          * Saving the document to the database asynchronously.
@@ -64,14 +74,21 @@ app.post('/api/add', async (req, res) => {
 
         // Returning 201 status and the saved document upon success
         res.status(201).json(savedUser);
-
     } catch (error) {
+        // Handling duplicate user error specifically (MongoDB error code 11000)
+        if (error.code === 11000) {
+            return res.status(400).json({
+                id: req.body ? req.body.id : 'unknown',
+                message: 'User already exists'
+            });
+        }
+
         /*
          * Standardized error response containing id and message.
          * Status 400 is used for bad requests or validation errors.
          */
         res.status(400).json({
-            id: req.body ? req.body.id : "unknown",
+            id: req.body ? req.body.id : 'unknown',
             message: error.message
         });
     }
@@ -84,13 +101,12 @@ app.post('/api/add', async (req, res) => {
 app.get('/api/users', async (req, res) => {
     try {
         const users = await User.find({});
+        // Returning the full list of users with status 200
         res.status(200).json(users);
     } catch (error) {
-        /*
-         * Handling unexpected database errors during fetch.
-         */
+        // Handling unexpected database errors during fetch
         res.status(400).json({
-            id: "all_users_error",
+            id: 'all_users_error',
             message: error.message
         });
     }
@@ -98,11 +114,21 @@ app.get('/api/users', async (req, res) => {
 
 /*
  * GET /api/users/:id endpoint for specific user details.
- * Also returns the total costs sum (set to 0 until partner completes costs).
+ * Converts the URL param to Number to match the schema type.
  */
 app.get('/api/users/:id', async (req, res) => {
     try {
-        const userId = req.params.id;
+        // Converting the string param to a Number to match the schema type
+        const userId = Number(req.params.id);
+
+        // Validating that the provided ID is actually a valid number
+        if (isNaN(userId)) {
+            return res.status(400).json({
+                id: req.params.id,
+                message: 'Invalid user ID format'
+            });
+        }
+
         const user = await User.findOne({ id: userId });
 
         /*
@@ -112,23 +138,23 @@ app.get('/api/users/:id', async (req, res) => {
         if (!user) {
             return res.status(404).json({
                 id: userId,
-                message: "User not found"
+                message: 'User not found'
             });
         }
+
+        // Calculating the total costs for this user across all categories
+        const userCosts = await Cost.find({ userid: userId });
+        const total = userCosts.reduce((acc, current) => acc + current.sum, 0);
 
         /*
          * Success response including basic info and calculated total costs.
          */
-        const userCosts = await Cost.find({ userid: user.id });
-        const total = userCosts.reduce((acc, current) => acc + current.sum, 0);
-
         res.status(200).json({
             first_name: user.first_name,
             last_name: user.last_name,
             id: user.id,
             total: total
         });
-
     } catch (error) {
         res.status(400).json({
             id: req.params.id,

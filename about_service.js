@@ -1,4 +1,5 @@
 require('dotenv').config();
+
 const express = require('express');
 
 /*
@@ -11,15 +12,21 @@ const Log = require('./models/log');
 
 const app = express();
 
+/*
+ * Establishing connection to MongoDB Atlas using the URI from .env.
+ * Handling success and failure scenarios for the database connection.
+ */
 mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log('About Service connected to MongoDB'))
     .catch((error) => console.error('MongoDB connection error:', error));
 
+// Custom Pino stream that writes to console and saves Log documents
 const logStream = {
     write: (chunk) => {
         process.stdout.write(chunk);
         try {
             const logData = JSON.parse(chunk.toString());
+            // Save log entry to MongoDB if the chunk contains request data
             if (logData.req) {
                 Log.create({
                     method: logData.req.method,
@@ -44,28 +51,28 @@ app.use(pinoHttp({}, logStream));
  */
 app.get('/api/about', (req, res) => {
     try {
+        // Team members hardcoded as required - not stored in the database
         const teamMembers = [
-            { first_name: "agneta", last_name: "gavrielov" },
-            { first_name: "tal", last_name: "sujaz" }
+            { first_name: 'agneta', last_name: 'gavrielov' },
+            { first_name: 'tal', last_name: 'sujaz' }
         ];
 
         // Send the JSON response with status 200
         res.status(200).json(teamMembers);
-
     } catch (error) {
         /*
-         * Error handling: returning the required JSON format.
+         * Error handling: returning the required JSON format with id and message.
          */
         res.status(400).json({
-            id: "about_error",
+            id: 'about_error',
             message: error.message
         });
     }
 });
 
 /*
- * Starting the About service on port 3002.
- * Each process must run on a different port.
+ * Starting the About service on the port defined in environment variables.
+ * Each process must run on a different port as per project requirements.
  */
 const PORT = process.env.ABOUT_PORT || 3002;
 app.listen(PORT, () => {
