@@ -65,6 +65,8 @@ function createEmptyReport(userid, year, month) {
 /*
  * POST /api/add endpoint for adding a new cost item.
  * We must validate that the user exists in the database before saving.
+ * If created_at is provided in the request body, it will be used as the date.
+ * Otherwise, the current date and time will be used automatically.
  */
 app.post('/api/add', async (req, res) => {
     try {
@@ -95,8 +97,18 @@ app.post('/api/add', async (req, res) => {
             });
         }
 
+        /*
+         * Building the cost data object.
+         * If created_at is provided in the request, we use it.
+         * Otherwise the schema default (Date.now) will be applied.
+         */
+        const costData = {
+            ...req.body,
+            created_at: req.body.created_at ? new Date(req.body.created_at) : new Date()
+        };
+
         // Create and save the new cost document
-        const cost = new Cost(req.body);
+        const cost = new Cost(costData);
         await cost.save();
 
         // Return the saved cost item
