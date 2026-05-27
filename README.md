@@ -6,6 +6,17 @@ The system follows a **microservices-like architecture**, where each service run
 
 ---
 
+## ☁️ Live Deployment (Render)
+
+All microservices are fully deployed and live on the cloud. You can click the links below to test the active endpoints directly in your browser:
+
+- **Users Service:** `https://costmanager-users-dog5.onrender.com/api/users`
+- **About Service:** `https://costmanager-about-2r6u.onrender.com/api/about`
+- **Costs & Report Service:** `https://costmanager-costs-fljc.onrender.com/api/report?id=123123&year=2026&month=5`
+- **Logs Service:** `https://costmanager-logs-mu5w.onrender.com/api/logs`
+
+---
+
 ## 🚀 Services
 
 ### 👤 Users Service (Port 3001)
@@ -67,14 +78,16 @@ Handles system logging:
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/AgnetaGavrielov/CostManager_HIT.git
+git clone [https://github.com/AgnetaGavrielov/CostManager_HIT.git](https://github.com/AgnetaGavrielov/CostManager_HIT.git)
 cd CostManager_HIT
+
 ```
 
 ### 2. Install dependencies
 
 ```bash
 npm install
+
 ```
 
 ### 3. Environment Variables
@@ -87,7 +100,10 @@ USERS_PORT=3001
 ABOUT_PORT=3002
 COST_PORT=3003
 LOG_PORT=3004
+
 ```
+
+> **🎓 Note for the Lecturer:** The actual `MONGO_URI` connection string is provided securely in the submitted PDF document. You can copy it directly from there to run the project locally.
 
 ---
 
@@ -100,37 +116,41 @@ node users_service.js
 node about_service.js
 node cost_service.js
 node log_service.js
+
 ```
 
 ---
 
 ## 🧪 Testing
 
-The project includes automated tests using:
+### 🌐 Cloud Testing (Postman & Python)
 
-- **Mocha**
-- **Chai**
-- **Supertest**
+To easily test the live API endpoints, you can use **Postman** or the included Python script:
 
-### ▶️ Run tests
+* **Postman:** Send requests directly to the Render URLs listed at the top of this document.
+* **Python Script:** Run the included `test_project.py` script to perform an automated integration test directly against the live cloud servers.
 
-1. Make sure **all 4 services are running**
+### 💻 Local Testing (Mocha & Chai)
+
+The project also includes automated unit tests using **Mocha**, **Chai**, and **Supertest**.
+
+1. Make sure **all 4 services are running** locally.
 2. Run:
 
 ```bash
 npm test
+
 ```
 
 ---
 
 ## 📌 Notes
 
-- Each service runs independently on its own port
-- Make sure MongoDB Atlas is accessible before running the services
+* Each service runs independently on its own port
+* Make sure MongoDB Atlas is accessible before running the services
 
 ---
 
 ## 👩‍💻 Authors
 
-This project was developed by **Agneta Gavrielov** and **Tal Sujaz**  
-as part of the *Asynchronous Server-Side Development* course at HIT (Holon Institute of Technology).
+This project was developed by **Agneta Gavrielov** and **Tal Sujaz** as part of the *Asynchronous Server-Side Development* course at HIT (Holon Institute of Technology).
