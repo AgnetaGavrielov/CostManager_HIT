@@ -8,6 +8,18 @@ const { expect } = require('chai');
 describe('Cost Service Unit Tests', () => {
     // Base URL for the Cost microservice (port 3003)
     const api = 'http://localhost:3003';
+    // Base URL for the Users microservice needed to create test user
+    const usersApi = 'http://localhost:3001';
+
+    /**
+     * Creates the test user before running cost tests.
+     * If the user already exists the error is ignored.
+     */
+    before(async () => {
+        await request(usersApi)
+            .post('/api/add')
+            .send({ id: 999999, first_name: 'Test', last_name: 'User', birthday: '2000-01-01' });
+    });
 
     /**
      * Test case: Adding a valid cost item.
