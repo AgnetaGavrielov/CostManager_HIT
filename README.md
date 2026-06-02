@@ -23,14 +23,14 @@ All microservices are fully deployed and live on the cloud. You can click the li
 
 Handles user management and database operations:
 
-- `POST /api/add`  
-  Create a new user  
+- `POST /api/add`
+  Create a new user
   **Required fields:** `id`, `first_name`, `last_name`, `birthday`
 
-- `GET /api/users`  
+- `GET /api/users`
   Get a list of all users
 
-- `GET /api/users/:id`  
+- `GET /api/users/:id`
   Get details of a specific user, including total cost calculation
 
 ---
@@ -39,7 +39,7 @@ Handles user management and database operations:
 
 Provides information about the development team:
 
-- `GET /api/about`  
+- `GET /api/about`
   Returns a JSON array with team members' first and last names only
 
 ---
@@ -48,13 +48,13 @@ Provides information about the development team:
 
 Handles cost management and reporting:
 
-- `POST /api/add`  
-  Add a new cost item (validates that the user exists)  
-  **Required fields:** `userid`, `description`, `category`, `sum`  
+- `POST /api/add`
+  Add a new cost item (validates that the user exists and that the sum is not negative)
+  **Required fields:** `userid`, `description`, `category`, `sum`
   **Supported categories:** `food`, `health`, `housing`, `sports`, `education`
 
-- `GET /api/report?id=:id&year=:year&month=:month`  
-  Get a monthly cost report grouped by categories  
+- `GET /api/report?id=:id&year=:year&month=:month`
+  Get a monthly cost report grouped by categories
   **Required parameters:** `id`, `year`, `month`
 
   > **Computed Design Pattern:** Reports for past months are calculated once and cached
@@ -67,8 +67,8 @@ Handles cost management and reporting:
 
 Handles system logging:
 
-- `GET /api/logs`  
-  Retrieve all system logs from the database  
+- `GET /api/logs`
+  Retrieve all system logs from the database
   *(Every HTTP request to any service is automatically logged)*
 
 ---
@@ -78,16 +78,14 @@ Handles system logging:
 ### 1. Clone the repository
 
 ```bash
-git clone [https://github.com/AgnetaGavrielov/CostManager_HIT.git](https://github.com/AgnetaGavrielov/CostManager_HIT.git)
+git clone https://github.com/AgnetaGavrielov/CostManager_HIT.git
 cd CostManager_HIT
-
 ```
 
 ### 2. Install dependencies
 
 ```bash
 npm install
-
 ```
 
 ### 3. Environment Variables
@@ -100,7 +98,6 @@ USERS_PORT=3001
 ABOUT_PORT=3002
 COST_PORT=3003
 LOG_PORT=3004
-
 ```
 
 > **🎓 Note for the Lecturer:** The actual `MONGO_URI` connection string is provided securely in the submitted PDF document. You can copy it directly from there to run the project locally.
@@ -116,7 +113,6 @@ node users_service.js
 node about_service.js
 node cost_service.js
 node log_service.js
-
 ```
 
 ---
@@ -127,27 +123,29 @@ node log_service.js
 
 To easily test the live API endpoints, you can use **Postman** or the included Python script:
 
-* **Postman:** Send requests directly to the Render URLs listed at the top of this document.
-* **Python Script:** Run the included `test_project.py` script to perform an automated integration test directly against the live cloud servers.
+- **Postman:** Send requests directly to the Render URLs listed at the top of this document.
+- **Python Script:** Run the included `test_project.py` script to perform an automated integration test directly against the live cloud servers.
 
 ### 💻 Local Testing (Mocha & Chai)
 
-The project also includes automated unit tests using **Mocha**, **Chai**, and **Supertest**.
+The project includes automated unit tests using **Mocha**, **Chai**, and **Supertest**.
 
 1. Make sure **all 4 services are running** locally.
 2. Run:
 
 ```bash
 npm test
-
 ```
 
 ---
 
 ## 📌 Notes
 
-* Each service runs independently on its own port
-* Make sure MongoDB Atlas is accessible before running the services
+- Each service runs independently on its own port
+- All model files follow PascalCase naming convention as required
+- Variables are declared using `const` and `let` only — no `var`
+- Strict equality (`===`) is used throughout the codebase
+- Make sure MongoDB Atlas is accessible before running the services
 
 ---
 
