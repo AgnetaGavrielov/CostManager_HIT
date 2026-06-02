@@ -1,12 +1,8 @@
-/*
- * Importing the Mongoose library.
- */
+// Importing the Mongoose library
 const mongoose = require('mongoose');
 
-/*
- * Defining the schema for the Users collection.
- * The required fields are id, first_name, last_name, and birthday.
- */
+// Defining the schema for the Users collection
+// The required fields are id, first_name, last_name, and birthday
 const userSchema = new mongoose.Schema({
     id: {
         type: Number,
@@ -21,17 +17,13 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    // Adding birthday field as required by the documentation
+    // Birthday field is required by the project documentation
     birthday: {
         type: Date,
         required: true
     }
 });
 
-/*
- * Creating the User model using the schema above.
- * The model name must start with a capital letter.
- */
+// Creating and exporting the User model — PascalCase as required
 const User = mongoose.model('User', userSchema);
-
 module.exports = User;

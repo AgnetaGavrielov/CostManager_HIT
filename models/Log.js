@@ -1,12 +1,8 @@
-/*
- * Importing the Mongoose library.
- */
+// Importing the Mongoose library
 const mongoose = require('mongoose');
 
-/*
- * Defining the schema for the Logs collection.
- * This collection stores every HTTP request made to the system.
- */
+// Defining the schema for the Logs collection
+// This collection stores every HTTP request made to the system
 const logSchema = new mongoose.Schema({
     method: String,
     url: String,
@@ -16,8 +12,5 @@ const logSchema = new mongoose.Schema({
     }
 });
 
-/*
- * Exporting the Log model to be used by the services.
- * The model name starts with a capital letter as required.
- */
+// Exporting the Log model — PascalCase as required by naming conventions
 module.exports = mongoose.model('Log', logSchema);

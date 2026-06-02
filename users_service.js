@@ -2,27 +2,24 @@ require('dotenv').config();
 
 const express = require('express');
 const mongoose = require('mongoose');
-
-/*
- * Importing pino-http for professional logging of all requests.
- * Importing the User model from the local models folder.
- */
+// Importing pino-http for professional logging of all requests
+// Importing models from the local models folder
 const pinoHttp = require('pino-http');
-const User = require('./models/user');
-const Cost = require('./models/cost');
-const Log = require('./models/log');
+const User = require('./models/User');
+const Cost = require('./models/Cost');
+const Log = require('./models/Log');
 
 const app = express();
 
-/*
- * Custom Pino stream that writes to console and saves Log documents.
+/**
+ * Custom Pino stream that writes to console and saves Log documents to MongoDB.
  */
 const logStream = {
     write: (chunk) => {
         process.stdout.write(chunk);
         try {
             const logData = JSON.parse(chunk.toString());
-            // Save log entry to MongoDB if the chunk contains request data
+            // Save log entry to MongoDB if request data is present
             if (logData.req) {
                 Log.create({
                     method: logData.req.method,
@@ -34,59 +31,49 @@ const logStream = {
     }
 };
 
-/*
- * Standard middleware for parsing JSON in request bodies.
- * Pino middleware logs every incoming HTTP request automatically.
- */
+// Standard middleware for parsing JSON in request bodies
+// Pino middleware logs every incoming HTTP request automatically
 app.use(express.json());
 app.use(pinoHttp({}, logStream));
 
-/*
- * Establishing connection to MongoDB Atlas using the URI from .env.
- * Handling success and failure scenarios for the database connection.
- */
+// Establishing connection to MongoDB Atlas using the URI from .env
 mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log('Connected to MongoDB successfully!'))
     .catch((error) => console.error('MongoDB connection error:', error));
 
-/*
- * POST /api/add endpoint for creating new users.
- * Expects id, first_name, last_name, and birthday in the JSON body.
+/**
+ * POST /api/add
+ * Creates a new user. Validates all required fields before saving.
+ * @param {number} id - Unique user ID.
+ * @param {string} first_name - User's first name.
+ * @param {string} last_name - User's last name.
+ * @param {Date} birthday - User's date of birth.
  */
 app.post('/api/add', async (req, res) => {
     try {
         const { id, first_name, last_name, birthday } = req.body;
 
-        // Validating that all required fields are present before proceeding
-        if (!id || !first_name || !last_name || !birthday) {
-            return res.status(400).json({
-                id: id || 'unknown',
-                message: 'Missing required fields: id, first_name, last_name, birthday'
-            });
+        // Validating that all required fields are present with specific error messages
+        if (id === undefined || id === null) {
+            return res.status(400).json({ id: 'validation_error', message: 'id is required' });
+        }
+        if (!first_name) {
+            return res.status(400).json({ id: 'validation_error', message: 'first_name is required' });
+        }
+        if (!last_name) {
+            return res.status(400).json({ id: 'validation_error', message: 'last_name is required' });
+        }
+        if (!birthday) {
+            return res.status(400).json({ id: 'validation_error', message: 'birthday is required' });
         }
 
-        /*
-         * Initializing a new User document based on the Mongoose schema.
-         * Saving the document to the database asynchronously.
-         */
+        // Initializing a new User document and saving to the database
         const newUser = new User({ id, first_name, last_name, birthday });
         const savedUser = await newUser.save();
-
         // Returning 201 status and the saved document upon success
         res.status(201).json(savedUser);
     } catch (error) {
-        // Handling duplicate user error specifically (MongoDB error code 11000)
-        if (error.code === 11000) {
-            return res.status(400).json({
-                id: req.body ? req.body.id : 'unknown',
-                message: 'User already exists'
-            });
-        }
-
-        /*
-         * Standardized error response containing id and message.
-         * Status 400 is used for bad requests or validation errors.
-         */
+        // Standardized error response containing id and message
         res.status(400).json({
             id: req.body ? req.body.id : 'unknown',
             message: error.message
@@ -94,17 +81,15 @@ app.post('/api/add', async (req, res) => {
     }
 });
 
-/*
- * GET /api/users endpoint to retrieve all registered users.
- * Fetches every document from the users collection.
+/**
+ * GET /api/users
+ * Returns a list of all registered users.
  */
 app.get('/api/users', async (req, res) => {
     try {
         const users = await User.find({});
-        // Returning the full list of users with status 200
         res.status(200).json(users);
     } catch (error) {
-        // Handling unexpected database errors during fetch
         res.status(400).json({
             id: 'all_users_error',
             message: error.message
@@ -112,29 +97,18 @@ app.get('/api/users', async (req, res) => {
     }
 });
 
-/*
- * GET /api/users/:id endpoint for specific user details.
- * Converts the URL param to Number to match the schema type.
+/**
+ * GET /api/users/:id
+ * Returns details for a specific user including their total costs.
+ * @param {string} id - The user ID passed as a URL parameter.
  */
 app.get('/api/users/:id', async (req, res) => {
     try {
-        // Converting the string param to a Number to match the schema type
-        const userId = Number(req.params.id);
-
-        // Validating that the provided ID is actually a valid number
-        if (isNaN(userId)) {
-            return res.status(400).json({
-                id: req.params.id,
-                message: 'Invalid user ID format'
-            });
-        }
-
+        const userId = req.params.id;
         const user = await User.findOne({ id: userId });
 
-        /*
-         * Checking if the user exists in the database.
-         * Returning 404 Not Found if user is missing.
-         */
+        // Checking if the user exists in the database
+        // Returning 404 Not Found if user is missing
         if (!user) {
             return res.status(404).json({
                 id: userId,
@@ -142,13 +116,9 @@ app.get('/api/users/:id', async (req, res) => {
             });
         }
 
-        // Calculating the total costs for this user across all categories
-        const userCosts = await Cost.find({ userid: userId });
+        // Calculate total costs for this user and return the response
+        const userCosts = await Cost.find({ userid: user.id });
         const total = userCosts.reduce((acc, current) => acc + current.sum, 0);
-
-        /*
-         * Success response including basic info and calculated total costs.
-         */
         res.status(200).json({
             first_name: user.first_name,
             last_name: user.last_name,
@@ -163,10 +133,7 @@ app.get('/api/users/:id', async (req, res) => {
     }
 });
 
-/*
- * Initializing the server on the specified port from environment variables.
- * Each process in this project runs as a separate microservice.
- */
+// Initializing the server on the specified port from environment variables
 const PORT = process.env.USERS_PORT || 3001;
 app.listen(PORT, () => {
     console.log(`Users service is running on port ${PORT}`);
